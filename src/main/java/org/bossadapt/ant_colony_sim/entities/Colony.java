@@ -1,22 +1,43 @@
 package org.bossadapt.ant_colony_sim.entities;
 import java.util.Random;
 import java.util.HashMap;
+import java.util.Iterator;
+
 import org.bossadapt.ant_colony_sim.entities.ants.Ant;
+import org.bossadapt.ant_colony_sim.entities.ants.enemy.Bala;
+import org.bossadapt.ant_colony_sim.entities.ants.friendly.Forager;
+import org.bossadapt.ant_colony_sim.entities.ants.friendly.Queen;
+import org.bossadapt.ant_colony_sim.entities.ants.friendly.Scout;
+import org.bossadapt.ant_colony_sim.entities.ants.friendly.Soldier;
 import org.bossadapt.ant_colony_sim.model.Cord;
+import org.bossadapt.ant_colony_sim.model.LocationResponse;
+import org.bossadapt.ant_colony_sim.model.SimulationResponse;
 
 public class Colony {
     public static Random rand = new Random();
     public Location[][] grid;
     private HashMap<Integer,Ant> ants;
     private int currentAntId;
-    private int totalTurnCount =0;
+    private int turnsSinceStart =0;
+    private boolean isQueenAlive = true;
+    protected boolean queenHatchingActive;
+    public static final int QUEEN_ID = 0;
     public static final int ENTERANCE_X = 13;
     public static final int ENTERANCE_Y = 13;
-    Colony(Ant[] initialAnts){
-        this.grid = new Location[27][27];
+    public Colony(boolean queenHatchingActive,int initialRevealedRadius, int initialForager, int initialSoldier,int initialScout,int initialBala){
+        this.queenHatchingActive = queenHatchingActive;
         this.ants = new HashMap<>();
+
+        //build initial enviorment
+        this.grid = new Location[27][27];
         for(int y =0; y<27;y++){
             for(int x=0;  x<27;x++){
+                boolean revealed = false;
+                if(y>=ENTERANCE_Y-initialRevealedRadius && y<=ENTERANCE_Y+initialRevealedRadius){
+                    if(x>=ENTERANCE_X-initialRevealedRadius && x<=ENTERANCE_X+initialRevealedRadius){
+                        revealed = true;
+                    }
+                }
                 int foodAmount;
                 if(x==ENTERANCE_X && y==ENTERANCE_Y){
                     //colony home
@@ -25,53 +46,80 @@ public class Colony {
                     boolean hasFood = rand.nextInt(4) == 0;
                     foodAmount = hasFood ? rand.nextInt(500)+500: 0;
                 }
-                grid[y][x] = new Location(foodAmount);
+                grid[y][x] = new Location(revealed,foodAmount);
             }
         }
-        for(Ant ant:initialAnts){
-            this.addFriendlyAnt(ant);
+        //spawn all the inital ants
+        this.spawnFriendlyAnt(new Queen(this,queenHatchingActive));
+        for(int i = 0; i< initialForager;i++){
+            this.spawnForager();
         }
-        currentAntId = initialAnts.length-1;
+        for(int i = 0; i< initialSoldier;i++){
+            this.spawnSoldier();
+        }
+        for(int i = 0; i< initialScout;i++){
+            this.spawnScout();
+        }
+        for(int i = 0; i< initialBala;i++){
+            this.spawnBala();
+        }
     }
     public Location[][] getGrid(){
         return grid;
     }
-    public boolean passTurn(){
-        this.totalTurnCount +=1;
+    public void passTurn(){
+        if(rand.nextInt(100)<3){
+            spawnBala();
+        }
+        Iterator<Ant>  antIterator = ants.values().iterator();
+        while(isQueenAlive && antIterator.hasNext()){
+            antIterator.next().passTurn();
+        }
+        if(isQueenAlive){
+            for(int y =0; y<grid.length;y++){
+                for(int x =0; x<grid.length;x++){
+                    grid[y][x].passTurn(turnsSinceStart);
+                }
+            }
+        }
+        this.turnsSinceStart +=1;
     }
-    public void moveFriendlyAnt(Ant ant,Cord newPosition){
-        Cord oldPosition = ant.getPosition();
-        this.grid[oldPosition.y][oldPosition.x].removeFriendlyAnt(ant);
-        ant.setPosition(newPosition);
-        this.grid[newPosition.y][oldPosition.x].addFriendlyAnt(ant);
-    }
-    public void moveEnemyAnt(Ant ant,Cord newPosition){
-        Cord oldPosition = ant.getPosition();
-        this.grid[oldPosition.y][oldPosition.x].removeEnemyAnt(ant);
-        ant.setPosition(newPosition);
-        this.grid[newPosition.y][oldPosition.x].addEnemyAnt(ant);
-    }
-    public int incrementAndGetAntId(){
+    private int incrementAndGetAntId(){
         this.currentAntId++;
         return currentAntId;
     }
-    public void addFriendlyAnt(Ant newAnt){
+    public void spawnScout(){
+        this.spawnFriendlyAnt(new Scout(incrementAndGetAntId(),this));
+    }
+    public void spawnSoldier(){
+        this.spawnFriendlyAnt(new Soldier(incrementAndGetAntId(),this));
+    }
+    public void spawnForager(){
+        this.spawnFriendlyAnt(new Forager(incrementAndGetAntId(),this));
+    }
+    private void spawnFriendlyAnt(Ant newAnt){
         ants.put(newAnt.getId(),newAnt);
         grid[ENTERANCE_Y][ENTERANCE_X].addFriendlyAnt(newAnt);
     }
-    private void addEnemyAnt(Ant newAnt){
+    private void spawnBala(){
+        Ant newAnt = new Bala(this.incrementAndGetAntId(), this);
         ants.put(newAnt.getId(),newAnt);
-        grid[13][13].addEnemyAnt(newAnt);
+        Cord spawnPosition = newAnt.getPosition();
+        grid[spawnPosition.y][spawnPosition.x].addEnemyAnt(newAnt);
     }
-    public void removeFriendlyAnt(Ant ant){
-        ants.remove(ant.getId());
-        Cord position = ant.getPosition();
-        grid[position.y][position.x].removeFriendlyAnt(ant);
+    public void setQueenIsDead(){
+        this.isQueenAlive = false;
     }
-    public void removeEnemyAnt(Ant ant){
-        ants.remove(ant.getId());
-        Cord position = ant.getPosition();
-        grid[position.y][position.x].removeFriendlyAnt(ant);
+    public void removeAnt(Ant ant){
+        this.ants.remove(ant.getId());
     }
-
+    public SimulationResponse generateSimulationResponse(){
+        LocationResponse[][] locations = new LocationResponse[27][27];
+        for(int y =0; y< locations.length;y++){
+            for(int x =0; x< locations.length;x++){
+                locations[y][x] = grid[y][x].generateLocationResponse();
+            }   
+        } 
+        return SimulationResponse.builder().queenAlive(isQueenAlive).turnCount(turnsSinceStart).locations(locations).build();
+    }
 }

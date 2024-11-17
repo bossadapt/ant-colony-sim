@@ -2,6 +2,10 @@ package org.bossadapt.ant_colony_sim.entities;
 import java.util.LinkedList;
 
 import org.bossadapt.ant_colony_sim.entities.ants.Ant;
+import org.bossadapt.ant_colony_sim.entities.ants.friendly.Forager;
+import org.bossadapt.ant_colony_sim.entities.ants.friendly.Scout;
+import org.bossadapt.ant_colony_sim.entities.ants.friendly.Soldier;
+import org.bossadapt.ant_colony_sim.model.LocationResponse;
 
 public class Location {
     private boolean revealed;
@@ -10,8 +14,8 @@ public class Location {
     private int pheromoneAmount;
     private int foodAmount;
     //used for the home base
-    Location(int foodAmount){
-        this.revealed = false;
+    Location(boolean revealed, int foodAmount){
+        this.revealed = revealed;
         this.friendlyAnts = new LinkedList<>();
         this.enemyAnts = new LinkedList<>();
         this.pheromoneAmount =0;
@@ -43,13 +47,17 @@ public class Location {
         }
         return false;
     }
+    public void depositFood(){
+        this.foodAmount++;
+    }
     //to see if nonscout/ enemy ants can enter the space
     public boolean isRevealed(){
         return this.revealed;
     }
     //for scouts only
     public void setRevealed(){
-        this.revealed =true;
+        if(!revealed)
+            this.revealed =true;
     }
     //For soldier and enemy ants
     public boolean containsFriendlyAnts(){
@@ -85,5 +93,23 @@ public class Location {
     public void removeEnemyAnt(Ant ant){
         this.enemyAnts.remove(ant);
     }
-
+    public LocationResponse generateLocationResponse(){
+        //Ant Counts
+        int foragerCount =0;
+        int scoutCount=0;
+        int soldierCount=0;
+        for(Ant ant:friendlyAnts){
+            if(ant instanceof Forager){
+                foragerCount++;
+            }else if(ant instanceof Scout){
+                scoutCount++;
+            }else if(ant instanceof Soldier){
+                soldierCount++;
+            }
+        }
+        return LocationResponse.builder()
+        .foragerCount(foragerCount).scoutCount(scoutCount).soldierCount(soldierCount)
+        .balaCount(enemyAnts.size())
+        .foodAmount(foodAmount).pheromoneAmount(pheromoneAmount).build();
+    }
 }

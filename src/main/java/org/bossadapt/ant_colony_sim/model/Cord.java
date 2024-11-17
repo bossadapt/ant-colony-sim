@@ -8,18 +8,4 @@ public class Cord {
         this.x =x;
         this.y =y;
     }
-    //May be a bit suboptimal to use instead of 2 sized arrays, but those are terrible for readability
-    public static Cord[] generateMovementList(int x, int y){
-         Cord[] movements = {
-            new Cord(x-1, y-1),
-            new Cord(x-1, y),
-            new Cord(x-1, y+1),
-            new Cord(x,   y-1),
-            new Cord(x,   y+1),
-            new Cord(x+1, y-1),
-            new Cord(x+1, y),
-            new Cord(x+1, y+1),
-        };
-        return movements;
-    }
 }
