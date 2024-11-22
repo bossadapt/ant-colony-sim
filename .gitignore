@@ -36,7 +36,8 @@ build/
 # dependencies
 /ant-colony-frontend/node_modules
 /ant-colony-frontend/package-lock.json
-/node_modules
+node_modules/
+package-lock.json
 /ant-colony-frontend/.pnp
 /ant-colony-frontend/.pnp.*
 /ant-colony-frontend/.yarn/*

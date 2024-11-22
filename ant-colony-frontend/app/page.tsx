@@ -1,5 +1,4 @@
 "use client"
-import Image from "next/image";
 import styles from "./page.module.css";
 import { useState } from "react";
 import { defaultSimulationResponse, SimulationResponse } from "./interfaces";
@@ -52,7 +51,7 @@ export default function Home() {
   return (
     <div>
       <div className= {styles.header_container}>
-        <h3 className={styles.header_text}>SETUP OPTIONS:</h3>
+        <h3 className={styles.header_text}>Initial Setup Options:</h3>
         <button onClick={()=>{callApiOnce("normal")}} disabled={buttonsDisabled} className={styles.header_button}>Normal</button>
         <button onClick={()=>{callApiOnce("queen")}} disabled={buttonsDisabled} className={styles.header_button}>Queen</button>
         <button onClick={()=>{callApiOnce("scout")}} disabled={buttonsDisabled} className={styles.header_button}>Scout</button>
