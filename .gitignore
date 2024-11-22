@@ -31,3 +31,35 @@ build/
 
 ### VS Code ###
 .vscode/
+########################################################FOR NEXT
+# See https:/help.github.com/articles/ignoring-files/ for more about ignoring files.
+# dependencies
+/ant-colony-frontend/node_modules
+/ant-colony-frontend/.pnp
+/ant-colony-frontend/.pnp.*
+/ant-colony-frontend/.yarn/*
+/ant-colony-frontend/!.yarn/patches
+/ant-colony-frontend/!.yarn/plugins
+/ant-colony-frontend/!.yarn/releases
+/ant-colony-frontend/!.yarn/versions
+/ant-colony-frontend/# testing
+/ant-colony-frontend/coverage
+/ant-colony-frontend/# next.js
+/ant-colony-frontend/.next/
+/ant-colony-frontend/out/
+/ant-colony-frontend/# production
+/ant-colony-frontend/build
+/ant-colony-frontend/# misc
+/ant-colony-frontend/.DS_Store
+/ant-colony-frontend/*.pem
+/ant-colony-frontend/# debug
+/ant-colony-frontend/npm-debug.log*
+/ant-colony-frontend/yarn-debug.log*
+/ant-colony-frontend/yarn-error.log*
+/ant-colony-frontend/# env files (can opt-in for committing if needed)
+/ant-colony-frontend/.env*
+/ant-colony-frontend/# vercel
+/ant-colony-frontend/.vercel
+/ant-colony-frontend/# typescript
+/ant-colony-frontend/*.tsbuildinfo
+/ant-colony-frontend/next-env.d.ts

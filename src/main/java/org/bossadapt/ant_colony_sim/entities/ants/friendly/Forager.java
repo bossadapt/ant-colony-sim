@@ -49,7 +49,9 @@ public class Forager extends FriendlyAnt{
         ArrayList<Cord> possibleMovements= this.generatePossibleRevealedMovementList();
         //remove the path that it came from
         if(possibleMovements.size()>1){
-            possibleMovements.remove(pathUsed.peek());
+            if(!pathUsed.empty()){
+                possibleMovements.remove(pathUsed.peek());
+            }
             int highestPheromone =0;
             ArrayList<Cord> bestMovementOptions = new ArrayList<>();
             for(Cord movement : possibleMovements){

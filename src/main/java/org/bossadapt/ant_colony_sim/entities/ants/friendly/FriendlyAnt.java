@@ -27,7 +27,7 @@ public abstract class FriendlyAnt extends Ant{
     }
 
     protected ArrayList<Cord> generatePossibleRevealedMovementList(){
-        ArrayList<Cord> movementsPossible = generatePossibleRevealedMovementList();
+        ArrayList<Cord> movementsPossible = generatePossibleMovementList();
         movementsPossible.removeIf(cord -> (!this.colony.grid[cord.y][cord.x].isRevealed()));
         return movementsPossible;
     }

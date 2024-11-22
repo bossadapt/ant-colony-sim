@@ -1,0 +1,20 @@
+.header_container{
+  display: flex;
+  width: 100vw;
+  margin-top: 10px;
+  flex-direction: row;
+  justify-content: center;
+}
+.header_button{
+  font-size: 25px;
+  margin-left: 5px;
+}
+.header_text{
+  font-size: 25px;
+  margin-left: 20px;
+}
+@media (prefers-color-scheme: dark) {
+  .logo {
+    filter: invert();
+  }
+}

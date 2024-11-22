@@ -1,7 +1,9 @@
 package org.bossadapt.ant_colony_sim.entities;
 import java.util.Random;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.bossadapt.ant_colony_sim.entities.ants.Ant;
 import org.bossadapt.ant_colony_sim.entities.ants.enemy.Bala;
@@ -17,6 +19,9 @@ public class Colony {
     public static Random rand = new Random();
     public Location[][] grid;
     private HashMap<Integer,Ant> ants;
+    //to handle the aftermath of an iterator
+    private HashSet<Integer> bufferedDeadAntants;
+    private HashMap<Integer,Ant> bufferedBornAntants;
     private int currentAntId;
     private int turnsSinceStart =0;
     private boolean isQueenAlive = true;
@@ -27,6 +32,8 @@ public class Colony {
     public Colony(boolean queenHatchingActive,int initialRevealedRadius, int initialForager, int initialSoldier,int initialScout,int initialBala){
         this.queenHatchingActive = queenHatchingActive;
         this.ants = new HashMap<>();
+        this.bufferedBornAntants = new HashMap<>();
+        this.bufferedDeadAntants = new HashSet<>();
 
         //build initial enviorment
         this.grid = new Location[27][27];
@@ -50,15 +57,15 @@ public class Colony {
             }
         }
         //spawn all the inital ants
-        this.spawnFriendlyAnt(new Queen(this,queenHatchingActive));
+        this.spawnFriendlyAnt(false,new Queen(this,queenHatchingActive));
         for(int i = 0; i< initialForager;i++){
-            this.spawnForager();
+            this.spawnForager(false);
         }
         for(int i = 0; i< initialSoldier;i++){
-            this.spawnSoldier();
+            this.spawnSoldier(false);
         }
         for(int i = 0; i< initialScout;i++){
-            this.spawnScout();
+            this.spawnScout(false);
         }
         for(int i = 0; i< initialBala;i++){
             this.spawnBala();
@@ -67,14 +74,28 @@ public class Colony {
     public Location[][] getGrid(){
         return grid;
     }
-    public void passTurn(){
+    public Colony passTurn(){
+        System.out.println("pass turn on colony called");
         if(rand.nextInt(100)<3){
             spawnBala();
         }
         Iterator<Ant>  antIterator = ants.values().iterator();
         while(isQueenAlive && antIterator.hasNext()){
-            antIterator.next().passTurn();
+            Ant current = antIterator.next();
+            if(!bufferedDeadAntants.contains(current.getId())){
+                current.passTurn(); 
+            }
         }
+        //kill the things out of the iteration cycle
+        for(Integer antID : bufferedDeadAntants){
+            ants.remove(antID);
+        }
+        bufferedBornAntants.clear();
+        //spawn the things out of the iteration cycle
+        for(Entry<Integer, Ant> entry : bufferedBornAntants.entrySet()){
+            this.spawnFriendlyAnt(false, entry.getValue());
+        }
+        bufferedBornAntants.clear();
         if(isQueenAlive){
             for(int y =0; y<grid.length;y++){
                 for(int x =0; x<grid.length;x++){
@@ -83,22 +104,28 @@ public class Colony {
             }
         }
         this.turnsSinceStart +=1;
+        return this;
     }
     private int incrementAndGetAntId(){
         this.currentAntId++;
         return currentAntId;
     }
-    public void spawnScout(){
-        this.spawnFriendlyAnt(new Scout(incrementAndGetAntId(),this));
+    public void spawnScout(boolean needsBuffer){
+        this.spawnFriendlyAnt(needsBuffer,new Scout(incrementAndGetAntId(),this));
     }
-    public void spawnSoldier(){
-        this.spawnFriendlyAnt(new Soldier(incrementAndGetAntId(),this));
+    public void spawnSoldier(boolean needsBuffer){
+        this.spawnFriendlyAnt(needsBuffer,new Soldier(incrementAndGetAntId(),this));
     }
-    public void spawnForager(){
-        this.spawnFriendlyAnt(new Forager(incrementAndGetAntId(),this));
+    public void spawnForager(boolean needsBuffer){
+        this.spawnFriendlyAnt(needsBuffer,new Forager(incrementAndGetAntId(),this));
     }
-    private void spawnFriendlyAnt(Ant newAnt){
-        ants.put(newAnt.getId(),newAnt);
+    private void spawnFriendlyAnt(boolean needsBuffer,Ant newAnt){
+        //needs buffer is for whether the addition is happening during an iteration cycle in the hashmap
+        if(!needsBuffer){
+            ants.put(newAnt.getId(),newAnt);
+        }else{
+            bufferedBornAntants.put(newAnt.getId(),newAnt);
+        }
         grid[ENTERANCE_Y][ENTERANCE_X].addFriendlyAnt(newAnt);
     }
     private void spawnBala(){
@@ -111,7 +138,8 @@ public class Colony {
         this.isQueenAlive = false;
     }
     public void removeAnt(Ant ant){
-        this.ants.remove(ant.getId());
+        //cant make changes to the iterator
+        this.bufferedDeadAntants.add(ant.getId());
     }
     public SimulationResponse generateSimulationResponse(){
         LocationResponse[][] locations = new LocationResponse[27][27];

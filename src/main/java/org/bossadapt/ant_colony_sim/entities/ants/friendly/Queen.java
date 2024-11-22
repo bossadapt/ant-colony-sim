@@ -12,6 +12,7 @@ public class Queen extends FriendlyAnt{
     }
     @Override
     public void passTurn() {
+        System.out.println("pass turn on queen called");
         if( hatchingActive && turnsUntilDeath %10 == 0){
             hatchFriendlyAnt();
         }
@@ -32,13 +33,13 @@ public class Queen extends FriendlyAnt{
         int antChoice = Colony.rand.nextInt(4);
         switch(antChoice){
             case 0:
-                this.colony.spawnScout();
+                this.colony.spawnScout(true);
                 break;
             case 1:
-                this.colony.spawnSoldier();
+                this.colony.spawnSoldier(true);
                 break;
             default:
-                this.colony.spawnForager();
+                this.colony.spawnForager(true);
                 break;
 
         }

@@ -108,6 +108,7 @@ public class Location {
             }
         }
         return LocationResponse.builder()
+        .revealed(this.revealed)
         .foragerCount(foragerCount).scoutCount(scoutCount).soldierCount(soldierCount)
         .balaCount(enemyAnts.size())
         .foodAmount(foodAmount).pheromoneAmount(pheromoneAmount).build();
