@@ -12,7 +12,6 @@ public class Queen extends FriendlyAnt{
     }
     @Override
     public void passTurn() {
-        System.out.println("pass turn on queen called");
         if( hatchingActive && turnsUntilDeath %10 == 0){
             hatchFriendlyAnt();
         }

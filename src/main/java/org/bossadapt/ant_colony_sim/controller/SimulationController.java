@@ -1,10 +1,13 @@
 package org.bossadapt.ant_colony_sim.controller;
 
 import org.bossadapt.ant_colony_sim.entities.Colony;
+import org.bossadapt.ant_colony_sim.model.CustomSetupRequest;
 import org.bossadapt.ant_colony_sim.model.SimulationResponse;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.annotation.SessionScope;
 
@@ -51,6 +54,13 @@ public class SimulationController {
     @GetMapping("/soldierTest")
     public SimulationResponse soldierTest(HttpSession session) {
         Colony newColony =  new Colony(false,5,0,1,0,1);
+        session.setAttribute("currentColony", newColony);
+        return newColony.generateSimulationResponse();
+    }
+    @CrossOrigin(origins = "http://localhost:3000",allowCredentials = "true")
+    @PostMapping("/custom")
+    public SimulationResponse soldierTest(HttpSession session,@RequestBody CustomSetupRequest custom) {
+        Colony newColony =  new Colony(custom.isHatchingActive(),custom.getCustomRadius(),custom.getForagerCount(),custom.getSoldierCount(),custom.getScoutCount(),custom.getBalaCount());
         session.setAttribute("currentColony", newColony);
         return newColony.generateSimulationResponse();
     }

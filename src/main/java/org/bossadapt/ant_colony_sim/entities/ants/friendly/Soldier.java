@@ -31,7 +31,7 @@ public class Soldier extends FriendlyAnt{
         if(!possibleMovements.isEmpty()){
             //attempt to move into a space with a bala
             for(Cord possibleMovement :possibleMovements){
-                if(this.getCurrentLocation().containsEnemyAnts()){
+                if(this.colony.grid[possibleMovement.y][possibleMovement.x].containsEnemyAnts()){
                     this.move(possibleMovement);
                     return;
                 }

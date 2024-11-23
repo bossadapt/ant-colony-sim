@@ -3,7 +3,6 @@ import java.util.Random;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map.Entry;
 
 import org.bossadapt.ant_colony_sim.entities.ants.Ant;
 import org.bossadapt.ant_colony_sim.entities.ants.enemy.Bala;
@@ -20,8 +19,8 @@ public class Colony {
     public Location[][] grid;
     private HashMap<Integer,Ant> ants;
     //to handle the aftermath of an iterator
-    private HashSet<Integer> bufferedDeadAntants;
-    private HashMap<Integer,Ant> bufferedBornAntants;
+    private HashSet<Integer> bufferedDeadAnts;
+    private HashMap<Integer,Ant> bufferedBornAnts;
     private int currentAntId;
     private int turnsSinceStart =0;
     private boolean isQueenAlive = true;
@@ -32,8 +31,8 @@ public class Colony {
     public Colony(boolean queenHatchingActive,int initialRevealedRadius, int initialForager, int initialSoldier,int initialScout,int initialBala){
         this.queenHatchingActive = queenHatchingActive;
         this.ants = new HashMap<>();
-        this.bufferedBornAntants = new HashMap<>();
-        this.bufferedDeadAntants = new HashSet<>();
+        this.bufferedBornAnts = new HashMap<>();
+        this.bufferedDeadAnts = new HashSet<>();
 
         //build initial enviorment
         this.grid = new Location[27][27];
@@ -75,27 +74,26 @@ public class Colony {
         return grid;
     }
     public Colony passTurn(){
-        System.out.println("pass turn on colony called");
         if(rand.nextInt(100)<3){
             spawnBala();
         }
         Iterator<Ant>  antIterator = ants.values().iterator();
         while(isQueenAlive && antIterator.hasNext()){
             Ant current = antIterator.next();
-            if(!bufferedDeadAntants.contains(current.getId())){
+            if(!bufferedDeadAnts.contains(current.getId())){
                 current.passTurn(); 
             }
         }
         //kill the things out of the iteration cycle
-        for(Integer antID : bufferedDeadAntants){
+        for(Integer antID : bufferedDeadAnts){
             ants.remove(antID);
         }
-        bufferedBornAntants.clear();
+        bufferedDeadAnts.clear();
         //spawn the things out of the iteration cycle
-        for(Entry<Integer, Ant> entry : bufferedBornAntants.entrySet()){
-            this.spawnFriendlyAnt(false, entry.getValue());
+        for(Ant ant:bufferedBornAnts.values()){
+            this.spawnFriendlyAnt(false, ant);
         }
-        bufferedBornAntants.clear();
+        bufferedBornAnts.clear();
         if(isQueenAlive){
             for(int y =0; y<grid.length;y++){
                 for(int x =0; x<grid.length;x++){
@@ -123,10 +121,11 @@ public class Colony {
         //needs buffer is for whether the addition is happening during an iteration cycle in the hashmap
         if(!needsBuffer){
             ants.put(newAnt.getId(),newAnt);
-        }else{
-            bufferedBornAntants.put(newAnt.getId(),newAnt);
-        }
+
         grid[ENTERANCE_Y][ENTERANCE_X].addFriendlyAnt(newAnt);
+        }else{
+            bufferedBornAnts.put(newAnt.getId(),newAnt);
+        }
     }
     private void spawnBala(){
         Ant newAnt = new Bala(this.incrementAndGetAntId(), this);
@@ -139,7 +138,7 @@ public class Colony {
     }
     public void removeAnt(Ant ant){
         //cant make changes to the iterator
-        this.bufferedDeadAntants.add(ant.getId());
+        this.bufferedDeadAnts.add(ant.getId());
     }
     public SimulationResponse generateSimulationResponse(){
         LocationResponse[][] locations = new LocationResponse[27][27];

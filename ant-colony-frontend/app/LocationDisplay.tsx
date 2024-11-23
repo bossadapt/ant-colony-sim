@@ -1,22 +1,26 @@
 import { LocationResponse } from "./interfaces";
 
 interface LocationDisplayProps{
-    locR:LocationResponse
+    locR:LocationResponse,
+    pos:[number,number]
 }
-export const LocationDisplay: React.FC<LocationDisplayProps> = ({locR}) => {
-    let pheromoneCapacityPercent = (1000/locR.pheromoneAmount)
-    let r = 191*pheromoneCapacityPercent;
-    let g = 64*pheromoneCapacityPercent;
-    let b = 191*pheromoneCapacityPercent;
+export const LocationDisplay: React.FC<LocationDisplayProps> = ({locR,pos}) => {
+    let pheromoneCapacityPercent = locR.pheromoneAmount/1000
+    let r = Math.floor(191*pheromoneCapacityPercent);
+    let g = Math.floor(64*pheromoneCapacityPercent);
+    let b = Math.floor(191*pheromoneCapacityPercent);
+    let pheromoneAmountRGB = `rgb(${r}, ${g}, ${b})`;
+    let homeRGB = "rgb(170, 107, 57)";
+    let backgroundColor = pos[0] === 13&&pos[1] === 13 ? homeRGB : pheromoneAmountRGB;
     return(
         <div>
             {locR.revealed ? (
-            <div style={{color:`rgb(${r}, ${g}, ${b})`}}>
-                <h3>Forger:{locR.foragerCount}</h3>
-                <h3>Scout:{locR.scoutCount}</h3>
-                <h3>Soldier:{locR.soldierCount}</h3>
-                <h3>Bala:{locR.balaCount}</h3>
-                <h3>Food:{locR.foodAmount}</h3>
+            <div style={{backgroundColor:backgroundColor}}>
+                <h3 style={{color: locR.foragerCount>0? "cyan":"white"}}>Forager:{locR.foragerCount}</h3>
+                <h3 style={{color: locR.scoutCount>0? "blue":"white"}}>Scout:{locR.scoutCount}</h3>
+                <h3 style={{color: locR.soldierCount>0? "rgb(75, 94, 12)":"white"}}>Soldier:{locR.soldierCount}</h3>
+                <h3 style={{color: locR.balaCount>0? "red":"white"}}>Bala:{locR.balaCount}</h3>
+                <h3 style={{color: locR.foodAmount>0? "green":"white"}}>Food:{locR.foodAmount}</h3>
                 <h3>Pheromone:{locR.pheromoneAmount}</h3>
             </div>
         ) : (

@@ -8,4 +8,16 @@ public class Cord {
         this.x =x;
         this.y =y;
     }
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Cord){
+            Cord objCord = (Cord)obj;
+            return (objCord.x == this.x && objCord.y == this.y);
+        }
+        return false;
+    }
+    @Override
+    public String toString() {
+        return "("+x+","+y+")";
+    }
 }

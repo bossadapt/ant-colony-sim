@@ -1,10 +1,35 @@
-.header_container{
+.root{
+  height: 99vh;
+  width: 99vw;
+}
+.header_container_default{
   display: flex;
+  height: 5%;
   width: 100vw;
   margin-top: 10px;
   flex-direction: row;
   justify-content: center;
 }
+.header_container_custom{
+  display: flex;
+  height: 5%;
+  width: 100vw;
+  margin-top: 10px;
+  flex-direction: row;
+  justify-content: center;
+}
+.header_container_custom > div{
+  margin-left: 5px;
+  margin-right: 5px;
+  text-align: center;
+}
+.body_container{
+    height: 90%;
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: scroll;
+}
+
 .header_button{
   font-size: 25px;
   margin-left: 5px;
