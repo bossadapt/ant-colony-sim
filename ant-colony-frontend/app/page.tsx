@@ -15,7 +15,6 @@ export default function Home() {
   const [buttonsDisabled, setButtonDisabled] = useState(false);
   const [currentSim, setCurrentSim] = useState(defaultSimulationResponse);
   //customStatupState
-  //TODO: bug where queen does not hatch in custom
   const [hatchingActive,setHatchingActive] = useState(true);
   const [customRadius,setCustomRadius] = useState(0);
   const [customForagerCount,setCustomForagerCount] = useState(0);
@@ -24,7 +23,7 @@ export default function Home() {
   const [customBalaCount,setCustomBalaCount] = useState(0);
   async function callApiOnce(command:string){
     setButtonDisabled(true);
-    let url: string = "http://localhost:8080/";
+    let url: string = "https://bossadapt.org/antsim/api/";
     switch(command){
       case "step":{
         url+= "step";
@@ -58,7 +57,7 @@ export default function Home() {
         "Content-Type": "application/json",
       }}).then(async response => {
       if(response.ok){
-        let sim:SimulationResponse = await response.json();
+        const sim:SimulationResponse = await response.json();
         setCurrentSim(sim);
       }
     })
@@ -68,14 +67,14 @@ export default function Home() {
     setButtonDisabled(true);
     let queenAliveReactive: boolean|undefined = currentSim.queenAlive;
     while(queenAliveReactive){
-      queenAliveReactive = await fetch("http://localhost:8080/step",
+      queenAliveReactive = await fetch("https://bossadapt.org/antsim/api/step",
         {
         credentials: 'include',
         headers: { 
           "Content-Type": "application/json",
         }}).then(async response => {
         if(response.ok){
-          let sim:SimulationResponse = await response.json();
+          const sim:SimulationResponse = await response.json();
           setCurrentSim(sim);
           return sim.queenAlive;
         }
@@ -84,15 +83,15 @@ export default function Home() {
     setButtonDisabled(false);
   }
   async function customSetup(){
-    let newRequest:CustomSetupRequest = {
+    const newRequest:CustomSetupRequest = {
       hatchingActive: hatchingActive,
-      customRadius: customRadius,
+      customRadius: customRadius, 
       foragerCount: customForagerCount,
       soldierCount: customSoldierCount,
       scoutCount: customScoutCount,
       balaCount: customBalaCount
     };
-    await fetch("http://localhost:8080/custom",
+    await fetch("https://bossadapt.org/antsim/api/custom",
       {
       credentials: 'include',
       headers: { 
@@ -101,10 +100,40 @@ export default function Home() {
       method: "POST",
       body:JSON.stringify(newRequest)}).then(async response => {
       if(response.ok){
-        let sim:SimulationResponse = await response.json();
+        const sim:SimulationResponse = await response.json();
         setCurrentSim(sim);
       }
     });
+  }
+  function handleStartingRadius(newData:string){
+    const convertedNumber: number = Number(newData);
+    if(convertedNumber >=0){
+      setCustomRadius(convertedNumber);
+    }
+  }
+  function handleForagerCount(newData:string){
+    const convertedNumber: number = Number(newData);
+    if(convertedNumber >=0){
+      setCustomForagerCount(convertedNumber);
+    }
+  }
+  function handleSoldierCount(newData:string){
+    const convertedNumber: number = Number(newData);
+    if(convertedNumber >=0){
+      setCustomSoldierCount(convertedNumber);
+    }
+  }
+  function handleScoutCount(newData:string){
+    const convertedNumber: number = Number(newData);
+    if(convertedNumber >=0){
+      setCustomScoutCount(convertedNumber);
+    }
+  }
+  function handleBalaCount(newData:string){
+    const convertedNumber: number = Number(newData);
+    if(convertedNumber >=0){
+      setCustomBalaCount(convertedNumber);
+    }
   }
   return (
     <div className= {styles.root}>
@@ -125,27 +154,27 @@ export default function Home() {
         <h3 className={styles.header_text}>Custom Setup:</h3>
         <div>
           <h4>hatchingActive</h4>
-          <input checked={hatchingActive} onChange={(ev)=>{setHatchingActive((prev)=>{return !prev;})}} type="checkbox"></input>
+          <input checked={hatchingActive} onChange={()=>{setHatchingActive((prev)=>{return !prev;})}} type="checkbox"></input>
         </div>
         <div>
           <h4>startingRadius#</h4>
-          <input value={customRadius} onChange={(ev)=>{Number(ev.target.value) >= 0 ?setCustomRadius(Number(ev.target.value)):0}} type="number"></input>
+          <input value={customRadius} onChange={(ev)=>{handleStartingRadius(ev.target.value)}} type="number"></input>
         </div>
         <div>
           <h4>forager#</h4>
-          <input value={customForagerCount} onChange={(ev)=>{Number(ev.target.value) >= 0 ?setCustomForagerCount(Number(ev.target.value)):0}} type="number"></input>
+          <input value={customForagerCount} onChange={(ev)=>{handleForagerCount(ev.target.value)}} type="number"></input>
         </div>
         <div>
           <h4>soldier#</h4>
-          <input value={customSoldierCount} onChange={(ev)=>{Number(ev.target.value) >= 0 ?setCustomSoldierCount(Number(ev.target.value)):0}} type="number"></input>
+          <input value={customSoldierCount} onChange={(ev)=>{handleSoldierCount(ev.target.value)}} type="number"></input>
         </div>
         <div>
           <h4>scout#</h4>
-          <input value={customScoutCount} onChange={(ev)=>{Number(ev.target.value) >= 0 ?setCustomScoutCount(Number(ev.target.value)):0}} type="number"></input>
+          <input value={customScoutCount} onChange={(ev)=>{handleScoutCount(ev.target.value)}} type="number"></input>
         </div>
         <div>
           <h4>bala#</h4>
-          <input value={customBalaCount} onChange={(ev)=>{Number(ev.target.value) >= 0 ?setCustomBalaCount(Number(ev.target.value)):0}} type="number"></input>
+          <input value={customBalaCount} onChange={(ev)=>{handleBalaCount(ev.target.value)}} type="number"></input>
         </div>
         <button className={styles.header_button} onClick={()=>{customSetup()}}>custom</button>
         </div>

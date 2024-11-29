@@ -5,13 +5,13 @@ interface LocationDisplayProps{
     pos:[number,number]
 }
 export const LocationDisplay: React.FC<LocationDisplayProps> = ({locR,pos}) => {
-    let pheromoneCapacityPercent = locR.pheromoneAmount/1000
-    let r = Math.floor(191*pheromoneCapacityPercent);
-    let g = Math.floor(64*pheromoneCapacityPercent);
-    let b = Math.floor(191*pheromoneCapacityPercent);
-    let pheromoneAmountRGB = `rgb(${r}, ${g}, ${b})`;
-    let homeRGB = "rgb(170, 107, 57)";
-    let backgroundColor = pos[0] === 13&&pos[1] === 13 ? homeRGB : pheromoneAmountRGB;
+    const pheromoneCapacityPercent = locR.pheromoneAmount/1000
+    const r = Math.floor(191*pheromoneCapacityPercent);
+    const g = Math.floor(64*pheromoneCapacityPercent);
+    const b = Math.floor(191*pheromoneCapacityPercent);
+    const pheromoneAmountRGB = `rgb(${r}, ${g}, ${b})`;
+    const homeRGB = "rgb(170, 107, 57)";
+    const backgroundColor = pos[0] === 13&&pos[1] === 13 ? homeRGB : pheromoneAmountRGB;
     return(
         <div>
             {locR.revealed ? (

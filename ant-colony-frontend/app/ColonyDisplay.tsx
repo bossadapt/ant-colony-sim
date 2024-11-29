@@ -1,4 +1,4 @@
-import { LocationResponse, SimulationResponse } from "./interfaces";
+import { LocationResponse } from "./interfaces";
 import styles from "./ColonyDisplay.module.css";
 import LocationDisplay from "./LocationDisplay";
 interface ColonyDisplayProps{

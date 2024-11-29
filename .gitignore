@@ -34,6 +34,7 @@ build/
 ########################################################FOR NEXT
 # See https:/help.github.com/articles/ignoring-files/ for more about ignoring files.
 # dependencies
+backend.tar
 /ant-colony-frontend/node_modules
 /ant-colony-frontend/package-lock.json
 node_modules/
