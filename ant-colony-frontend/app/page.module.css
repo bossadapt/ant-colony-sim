@@ -5,26 +5,29 @@
 .header_container_default{
   display: flex;
   height: 5%;
-  width: 100vw;
-  margin-top: 10px;
+  width: 100%;
+  margin-top: 0.5%;
+  margin-bottom: 0.5%;
   flex-direction: row;
   justify-content: center;
 }
 .header_container_custom{
   display: flex;
   height: 5%;
-  width: 100vw;
-  margin-top: 10px;
+  width: 100%;
+  margin-top: 0.5%;
+  margin-bottom: 0.5%;
   flex-direction: row;
   justify-content: center;
 }
 .header_container_custom > div{
-  margin-left: 5px;
-  margin-right: 5px;
+  margin-left: 1%;
+  margin-right: 1%;
   text-align: center;
 }
 .body_container{
-    height: 87%;
+    height: 84%;
+    margin: 0px;
     width: 100%;
     overflow-y: scroll;
     overflow-x: scroll;
