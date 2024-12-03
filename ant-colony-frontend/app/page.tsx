@@ -135,6 +135,17 @@ export default function Home() {
       setCustomBalaCount(convertedNumber);
     }
   }
+  function queenDisplay(){
+    console.log(currentSim.queenAlive)
+    if (!currentSim.queenAlive) {
+      return(<div>
+        <h3 className={styles.header_text} style={{color:"red"}}>Queen: Dead</h3>
+      </div>)
+    }
+    return(
+      <h3 className={styles.header_text} style={{color:"green"}}>Queen: Alive</h3>
+    )
+  }
   return (
     <div className= {styles.root}>
       <div className= {styles.header_container_default}>
@@ -177,6 +188,7 @@ export default function Home() {
           <input value={customBalaCount} onChange={(ev)=>{handleBalaCount(ev.target.value)}} type="number"></input>
         </div>
         <button className={styles.header_button} onClick={()=>{customSetup()}}>custom</button>
+        {queenDisplay()}
         </div>
         <hr />
       <div className={styles.body_container}>

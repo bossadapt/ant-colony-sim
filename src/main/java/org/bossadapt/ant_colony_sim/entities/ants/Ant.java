@@ -11,7 +11,6 @@ public abstract class Ant {
     protected Colony colony;
     protected Cord position;
     protected int turnsUntilDeath;
-    //TODO  replace this with another datastructure because proffessor said no simple arrays
     private static int[][] movements = {
         {-1, -1},
         {-1, 0},
