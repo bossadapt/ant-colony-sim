@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @SessionScope
 @CrossOrigin(
-    origins = {"https://bossadapt.org"}, 
+    origins = {"https://bossadapt.org", "https://www.bossadapt.org"}, 
     methods = {RequestMethod.GET,RequestMethod.OPTIONS,RequestMethod.POST},
     allowCredentials = "true")
 public class SimulationController {

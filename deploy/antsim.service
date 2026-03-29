@@ -1,0 +1,16 @@
+[Unit]
+Description=Ant Colony Sim backend
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/srv/antsim
+ExecStart=/usr/bin/java -jar /srv/antsim/app.jar --server.address=127.0.0.1 --server.port=4001
+Restart=always
+RestartSec=5
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

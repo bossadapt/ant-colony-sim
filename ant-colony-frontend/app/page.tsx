@@ -3,6 +3,9 @@ import styles from "./page.module.css";
 import { useState } from "react";
 import { defaultSimulationResponse, SimulationResponse } from "./interfaces";
 import ColonyDisplay from "./ColonyDisplay";
+
+const API_BASE = "/antsim/api";
+
 interface CustomSetupRequest{
   hatchingActive:boolean;
   customRadius:number;
@@ -23,7 +26,7 @@ export default function Home() {
   const [customBalaCount,setCustomBalaCount] = useState(0);
   async function callApiOnce(command:string){
     setButtonDisabled(true);
-    let url: string = "https://bossadapt.org/antsim/api/";
+    let url: string = `${API_BASE}/`;
     switch(command){
       case "step":{
         url+= "step";
@@ -53,9 +56,7 @@ export default function Home() {
     await fetch(url,
       {
       credentials: 'include',
-      headers: { 
-        "Content-Type": "application/json",
-      }}).then(async response => {
+      }).then(async response => {
       if(response.ok){
         const sim:SimulationResponse = await response.json();
         setCurrentSim(sim);
@@ -67,12 +68,10 @@ export default function Home() {
     setButtonDisabled(true);
     let queenAliveReactive: boolean|undefined = currentSim.queenAlive;
     while(queenAliveReactive){
-      queenAliveReactive = await fetch("https://bossadapt.org/antsim/api/step",
+      queenAliveReactive = await fetch(`${API_BASE}/step`,
         {
         credentials: 'include',
-        headers: { 
-          "Content-Type": "application/json",
-        }}).then(async response => {
+        }).then(async response => {
         if(response.ok){
           const sim:SimulationResponse = await response.json();
           setCurrentSim(sim);
@@ -91,7 +90,7 @@ export default function Home() {
       scoutCount: customScoutCount,
       balaCount: customBalaCount
     };
-    await fetch("https://bossadapt.org/antsim/api/custom",
+    await fetch(`${API_BASE}/custom`,
       {
       credentials: 'include',
       headers: { 
